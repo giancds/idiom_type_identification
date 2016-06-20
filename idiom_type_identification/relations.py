@@ -1,7 +1,7 @@
 """
 
 """
-from idiom_type_identification.patterns import extract_active_patterns, extract_passive_patterns
+from patterns import extract_active_patterns, extract_passive_patterns
 
 _dobj = "dobj"
 _nsubjpass = "nsubjpass"
@@ -114,9 +114,19 @@ def _extract_determiner(dependencies, tokens, noun):
 
 
 def process_dependencies(raw_dependencies, raw_tokens):
+    """
 
+    Args:
+        raw_dependencies:
+        raw_tokens:
+
+    Returns:
+
+    """
     dependencies = _dependencies_to_dict(raw_dependencies)
     tokens = _tokens_to_dictionary(raw_tokens)
+
+    deps_found = []
 
     for dependencie in dependencies:
 
@@ -131,15 +141,28 @@ def process_dependencies(raw_dependencies, raw_tokens):
             noun_token = tokens[noun_id]
 
             verb = verb_token["lemma"]
+            verb_pos = verb_token["POS"]
             noun = noun_token["lemma"]
+            noun_pos = noun_token["POS"]
 
-            det = _extract_determiner(dependencies, tokens, noun_token["lemma"])
+            det_lemma = _extract_determiner(dependencies, tokens, noun_token["lemma"])
+
+            pattern = None
 
             if dependencie == _dobj:
 
-                pattern = extract_active_patterns(verb_token, noun_token, det)
+                pattern, det = extract_active_patterns(noun_token, det_lemma)
 
             elif dependencie == _nsubjpass:
 
-                pattern = extract_passive_patterns(verb_token, noun_token, det)
+                pattern, det = extract_passive_patterns()
 
+            if pattern is not None:
+                deps_found.append({"verb": verb,
+                                   "verb_POS": verb_pos,
+                                   "noun": noun,
+                                   "noun_POS": noun_pos,
+                                   "det": det,
+                                   "pattern": pattern})
+
+    return deps_found

@@ -60,7 +60,7 @@ def _extract_singlular_pattern(det):
     """
 
     Args:
-        det:
+        det: Python str representing the determiner lemma
 
     Returns:
 
@@ -88,7 +88,7 @@ def _extract_plural_pattern(det):
     """
 
     Args:
-        det:
+        det: Python str representing the determiner lemma
 
     Returns:
 
@@ -119,6 +119,14 @@ def extract_passive_patterns():
 
 
 def _extract_undefined_pattern(det):
+    """
+
+    Args:
+        det: Python str representing the determiner lemma
+
+    Returns:
+
+    """
 
     if det is None:
         return 0, "NULL"

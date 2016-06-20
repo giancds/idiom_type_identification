@@ -34,7 +34,7 @@ from relations import process_dependencies
 xml_file = '/home/gian/data/Parsed_BNC.xml'
 
 sent_count = 0
-verbosity = 1
+verbosity = 0
 
 i = 1
 cols = ["verb", "verb_POS", "noun", "noun_POS", "det", "pattern", "count"]
@@ -48,6 +48,12 @@ for _, sentences in etree.iterparse(xml_file, tag="sentences"):
         parsed_sentence = sentence.findall("parse")[0]
         sent_count += 1
 
+        if parsed_sentence.text.strip() == "(ROOT (S (ADVP (RB Often)) (NP (JJ infected) (NNS people)) (VP (VBP are) (VP (VBN rejected) (PP (IN by) (NP (NN family) (CC and) (NNS friends))) (, ,) (S (VP (VBG leaving) (S (NP (PRP them)) (VP (TO to) (VP (VB face) (NP (DT this) (JJ chronic) (NN condition)) (ADVP (RB alone))))))))) (. .)))":
+            print()
+
+        if verbosity > -1:
+            print("Processing sentence #{:d}".format(sent_count))
+
         dependencies = sentence.findall("dependencies")
 
         basic_dependencies = None
@@ -59,16 +65,14 @@ for _, sentences in etree.iterparse(xml_file, tag="sentences"):
 
         if basic_dependencies is not None:
 
-            print("Sentence: {:s}".format(parsed_sentence.text))
+            if verbosity > 0:
+                print("Sentence: {:s}".format(parsed_sentence.text))
 
             deps = basic_dependencies.findall("dep")
             tokens = sentence.findall("tokens")[0].findall("token")
             deps_found = process_dependencies(deps, tokens)
 
             for dep in deps_found:
-
-                if verbosity > 0:
-                    print("Processing sentence {:d}".format(sent_count))
 
                 v = dep["verb"]
                 v_pos = dep["verb_POS"]
@@ -85,7 +89,7 @@ for _, sentences in etree.iterparse(xml_file, tag="sentences"):
                     if verbosity > 1:
                         print("Adding index {:d} = {:s}".format(i, str(dep)))
 
-                    df.loc[p] = dep
+                    df.loc[i] = dep
                     i += 1
 
                 else:
@@ -94,13 +98,15 @@ for _, sentences in etree.iterparse(xml_file, tag="sentences"):
                              (df["noun"] == n) & (df["noun_POS"] == n_pos) &
                              (df["pattern"] == p)]["count"].index
 
-                    x = int(df[(df["verb"] == v) & (df["noun"] == n) & (df["pattern"] == p)]["count"])
-                    x += 1
-                    dep["count"] = x
+                    count = int(df[(df["verb"] == v) & (df["verb_POS"] == v_pos) &
+                                   (df["noun"] == n) & (df["noun_POS"] == n_pos) &
+                                   (df["pattern"] == p)]["count"])
+                    count += 1
+                    dep["count"] = count
 
                     if verbosity > 1:
                         print("Updating index {:d} = {:s}".format(idx[0], str(dep)))
 
-                    df.set_value(idx, "count", x)
+                    df.set_value(idx, "count", count)
 
     sentences.clear()

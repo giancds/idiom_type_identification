@@ -101,7 +101,7 @@ def _extract_determiner(dependencies, tokens, noun):
 
         if (dependencie == "det" or dependencie == "poss") and dep["governor"]["word"] == noun:
 
-            token_id = dep["governor"]["idx"]
+            token_id = dep["dependent"]["idx"]
             token = tokens[token_id]
 
             if token["POS"] in ["POS", "DT", "PRP$"]:

@@ -113,7 +113,7 @@ for _, sentences in etree.iterparse(xml_file, tag="sentences"):
             df.to_csv("/home/gian/datasets/vnics_type_counts.csv", encoding="utf-8", index="")
             df.to_pickle("/home/gian/datasets/vnics_type_counts.pkl")
 
-        sentences.clear()
+    sentences.clear()
 
 df.to_csv("/home/gian/datasets/vnics_type_counts.csv", encoding="utf-8", index="")
 df.to_pickle("/home/gian/datasets/vnics_type_counts.pkl")

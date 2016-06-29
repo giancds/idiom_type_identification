@@ -33,16 +33,17 @@ def _dependencies_to_dict(dependencies):
     dependencies_dictionary = dict()
 
     for dep in dependencies:
-        dep_type = dep.get("type")
-        dependencies_dictionary[dep_type] = {"governor": {}, "dependent": {}}
-
-        governor = dep.find("governor")
-        dependent = dep.find("dependent")
-
-        dependencies_dictionary[dep_type]["governor"]["idx"] = governor.get("idx")
-        dependencies_dictionary[dep_type]["governor"]["word"] = governor.text
-        dependencies_dictionary[dep_type]["dependent"]["idx"] = dependent.get("idx")
-        dependencies_dictionary[dep_type]["dependent"]["word"] = dependent.text
+        dep_type = dep["dep"]
+        dependencies_dictionary[dep_type] = {
+            "governor": {
+                "idx": dep["governor"],
+                "word": dep["governorGloss"]
+            },
+            "dependent": {
+                "idx": dep["dependent"],
+                "word": dep["dependentGloss"]
+            }
+        }
 
     return dependencies_dictionary
 
@@ -68,12 +69,12 @@ def _tokens_to_dictionary(raw_tokens):
     tokens_dictionary = dict()
 
     for token in raw_tokens:
-        id = token.get("id")
-        word = token.findall("word")[0].text
-        lemma = token.findall("lemma")[0].text
-        pos = token.findall("POS")[0].text
-        tokens_dictionary[id] = {
-            "id": id,
+        idx = token["index"]
+        word = token["word"]
+        lemma = token["lemma"]
+        pos = token["pos"]
+        tokens_dictionary[idx] = {
+            "id": idx,
             "word": word,
             "lemma": lemma,
             "POS": pos
@@ -119,6 +120,7 @@ def process_dependencies(raw_dependencies, raw_tokens):
     Args:
         raw_dependencies:
         raw_tokens:
+        json:
 
     Returns:
 
